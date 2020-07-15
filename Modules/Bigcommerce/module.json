@@ -1,0 +1,13 @@
+{
+    "name": "Bigcommerce",
+    "alias": "bigcommerce",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Bigcommerce\\Providers\\BigcommerceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
