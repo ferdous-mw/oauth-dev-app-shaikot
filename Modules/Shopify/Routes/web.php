@@ -14,6 +14,6 @@
 Route::prefix('shopify')->group(function() 
 {
     Route::get('/', 'ShopifyController@index');
-    Route::get('/Oauth_authentication_approval', 'ShopifyController@Oauth_authentication_approval');
-    Route::get('/Oauth_approval_success', 'ShopifyController@Oauth_approval_success');
+    Route::get('/oauthAuthenticationApprove', 'ShopifyController@oauthAuthenticationApprove');
+    Route::get('/oauthApprovalSuccess', 'ShopifyController@oauthApprovalSuccess');
 });

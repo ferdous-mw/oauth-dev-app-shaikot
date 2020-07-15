@@ -20,12 +20,12 @@ class ShopifyController extends Controller
         return view('shopify::index')->with('user_details',$user_details);
     }
 
-    public function Oauth_authentication_approval(Request $request)
+    public function  oauthAuthenticationApprove(Request $request)
     {
         $shop_name = $request->shop;
         $client_id = config('shopify.apiCredentials.client_id');
         $scopes = config('shopify.apiCredentials.scopes');
-        $redirect_url = config('app.url') . "shopify/Oauth_approval_success";
+        $redirect_url = config('app.url') . "shopify/oauthApprovalSuccess";
         $state = Str::random(16);
 
         $request_url_for_approve = "https://{$shop_name}/admin/oauth/authorize?client_id={$client_id}&scope={$scopes}&redirect_uri={$redirect_url}&state={$state}&grant_options[]=per-user";
@@ -33,7 +33,7 @@ class ShopifyController extends Controller
         return Redirect::to($request_url_for_approve);
     }
 
-    public function Oauth_approval_success(Request $request)
+    public function oauthApprovalSuccess(Request $request)
     {
         $client_id = config('shopify.apiCredentials.client_id');
         $client_secret = config('shopify.apiCredentials.client_secret');
