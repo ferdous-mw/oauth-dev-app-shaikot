@@ -14,7 +14,7 @@ class CreateBigCommerceUserDetailsTable extends Migration
     public function up()
     {
         Schema::create('big_commerce_user_details', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('user_name')->comment('Big commerce user name');
             $table->bigInteger('big_commerce_user_id')->comment('Big Commerce user id');
             $table->string('store_hash')->comment('Big commerce store hash');

@@ -14,7 +14,7 @@ class CreateShopifyUserDetailsTable extends Migration
     public function up()
     {
         Schema::create('shopify_user_details', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('user_name')->comment('shopify user name');
             $table->bigInteger('shopify_user_id')->comment('shopify user id');
             $table->string('store_url')->comment('shopify store url');

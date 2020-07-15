@@ -2,14 +2,23 @@
 
 namespace Modules\Shopify\Http\Controllers;
 
+use Auth;
+use Redirect;
+use App\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Str;
-use Redirect;
+use Illuminate\Support\Facades\Hash;
+use Modules\Shopify\Entities\ShopifyUserAccountDetails;
 
 class ShopifyController extends Controller
 {
+    public function index()
+    {
+        $user_details = User::with('shopifyUserDetails')->where('id',Auth::user()->id)->get();
+        return view('shopify::index')->with('user_details',$user_details);
+    }
 
     public function Oauth_authentication_approval(Request $request)
     {
@@ -50,12 +59,48 @@ class ShopifyController extends Controller
 
         if(preg_match("/OK/i", $response))
         {   
-            $result = json_decode($response, true);
-            $access_token = $result['access_token'];
+            $response = json_decode($response, true);
+
+            /* create or update shopify marchent user */
+            $user = $this->create_or_update_marchent_user($request, $response);
+
+            /* auto login system user*/
+            auth()->login($user, true);
+
+            return redirect()->to('/shopify');
+
+            print_r($user);
+            return;
         }
         else
         {
             return $response->body();
         }
+    }
+
+    public function create_or_update_marchent_user($request, $response)
+    {
+        $user = User::firstOrNew(['email' => $response['associated_user']['email']]);
+        $user->email = $response['associated_user']['email'];
+        $user->password = Hash::make($response['associated_user']['email']);
+        $user->name = $response['associated_user']['first_name'] . ' ' . $response['associated_user']['last_name'];
+        $user->save();
+        $this->saveShopifyUserAccountDetails($user, $request, $response);
+
+        return $user;
+    }
+
+    public function saveShopifyUserAccountDetails($user, $request, $response)
+    {
+        $shopify_details = ShopifyUserAccountDetails::firstOrNew(['user_id' => $user->id, 'store_url' => $request->shop]);
+        $shopify_details->user_name = $response['associated_user']['first_name'] . ' ' . $response['associated_user']['last_name'];
+        $shopify_details->shopify_user_id = $response['associated_user']['id'];
+        $shopify_details->store_url = $request->shop;
+        $shopify_details->user_id = $user->id;
+        $shopify_details->access_token = $response['access_token'];
+        $shopify_details->save();
+        session([
+            'store_url' => $request->shop
+        ]);
     }
 }
